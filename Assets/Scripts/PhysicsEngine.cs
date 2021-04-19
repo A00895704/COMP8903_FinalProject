@@ -51,6 +51,8 @@ public class PhysicsEngine : MonoBehaviour
 	public float length;				//length of the plank
 	
 	public float inertia;
+	public float baseInertia;
+	public bool conserveMomentum = false;
 
 	public Transform doorHinge;
 	[ReadOnly] public float angularVelocity;
@@ -61,7 +63,8 @@ public class PhysicsEngine : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
-		inertia = mass * Mathf.Pow(length, 2) / 3;
+		baseInertia = mass * Mathf.Pow(length, 2) / 3;
+		inertia = baseInertia;
 		SetupThrustTrails();
 	}
 
@@ -88,14 +91,22 @@ public class PhysicsEngine : MonoBehaviour
 		}
 		
 		addedTorqueList = new List<TorqueComponents>();
-
-		//// Calculate position change due to net force
-		angularAcceleration = netTorque / inertia;
-		angularVelocity += angularAcceleration * Time.deltaTime;
-		angularMomentum = inertia * angularVelocity;
+		if (conserveMomentum)
+		{
+			angularVelocity = angularMomentum / inertia;
+		}
+		else {
+			angularAcceleration = netTorque / inertia;
+			angularVelocity += angularAcceleration * Time.deltaTime;
+			angularMomentum = inertia * angularVelocity;		
+		}
 		transform.RotateAround(doorHinge.position, Vector3.up, angularVelocity);
+		//// Calculate position change due to net force
+
+		/*
 		if(netTorque != 0)
 			Debug.Log("Net torque: " + netTorque);
+		*/
 		netTorque = 0;
 		//netTorque = 0;
 	}
