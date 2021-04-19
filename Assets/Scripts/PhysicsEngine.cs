@@ -8,6 +8,14 @@ public struct TorqueComponents
 	public Vector3 force;
     public float radians; //angle in radians between the force and radius
     public float radius;
+	public GameObject objRef;
+	public TorqueComponents(Vector3 force, float radians, float radius, GameObject objRef)
+    {
+		this.force = force;
+		this.radians = radians;
+		this.radius = radius;
+		this.objRef = objRef;
+    }
 }
 
 public class ReadOnlyAttribute : PropertyAttribute
@@ -73,16 +81,23 @@ public class PhysicsEngine : MonoBehaviour
 		// Sum the added torques and clear the list
 		foreach (TorqueComponents torqueForce in addedTorqueList)
 		{
+			Debug.Log("Added torque");
 			float force = torqueForce.force.magnitude;
-			netTorque = torqueForce.radius * force *  Mathf.Sin(torqueForce.radians);
+			float forceDirMod = Vector3.Angle(torqueForce.objRef.transform.forward, transform.forward) * Mathf.Deg2Rad;
+			forceDirMod = forceDirMod <= 90 * Mathf.Deg2Rad ? 1f : -1f;
+			netTorque += torqueForce.radius * force * forceDirMod * Mathf.Sin(torqueForce.radians);
 		}
+		
 		addedTorqueList = new List<TorqueComponents>();
 
 		//// Calculate position change due to net force
 		angularAcceleration = netTorque / inertia;
 		angularVelocity += angularAcceleration * Time.deltaTime;
+		angularMomentum = inertia * angularVelocity;
 		transform.RotateAround(doorHinge.position, Vector3.up, angularVelocity);
-
+		if(netTorque != 0)
+			Debug.Log("Net torque: " + netTorque);
+		netTorque = 0;
 		//netTorque = 0;
 	}
 
