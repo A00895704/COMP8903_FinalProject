@@ -81,7 +81,6 @@ public class PhysicsEngine : MonoBehaviour
 		// Sum the added torques and clear the list
 		foreach (TorqueComponents torqueForce in addedTorqueList)
 		{
-			Debug.Log("Added torque");
 			float force = torqueForce.force.magnitude;
 			float forceDirMod = Vector3.Angle(torqueForce.objRef.transform.forward, transform.forward) * Mathf.Deg2Rad;
 			forceDirMod = forceDirMod <= 90 * Mathf.Deg2Rad ? 1f : -1f;
