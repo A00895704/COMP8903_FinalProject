@@ -95,8 +95,10 @@ public class PhysicsEngine : MonoBehaviour
 		angularVelocity += angularAcceleration * Time.deltaTime;
 		angularMomentum = inertia * angularVelocity;
 		transform.RotateAround(doorHinge.position, Vector3.up, angularVelocity);
+		/*
 		if(netTorque != 0)
 			Debug.Log("Net torque: " + netTorque);
+		*/
 		netTorque = 0;
 		//netTorque = 0;
 	}

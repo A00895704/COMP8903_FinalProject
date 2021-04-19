@@ -30,6 +30,8 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.GetComponent<Bullet>() != null)
+            return;
         GetComponent<SphereCollider>().enabled = false;
         Vector3 targetDir = transform.InverseTransformPoint(other.transform.position);
         float angle = Vector3.Angle(other.transform.right, transform.forward);
@@ -45,5 +47,12 @@ public class Bullet : MonoBehaviour
         PhysicsEngine otherBody = other.gameObject.GetComponent<PhysicsEngine>();
         otherBody.AddTorque(bulletTorque);
         Velocity = 0;
+        StartCoroutine(DeathDelay());
+    }
+
+    public IEnumerator DeathDelay()
+    {
+        yield return new WaitForSeconds(1.0f);
+        Destroy(gameObject);
     }
 }
